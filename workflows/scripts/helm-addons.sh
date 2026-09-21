@@ -51,6 +51,7 @@
 # written to a file. On success the hub run prints REMOTE_WRITE_URL=<url>.
 # KPS_HUB_EXTRA_VALUES: optional comma-separated extra values files for the hub release,
 # relative to --fleet-dir (for example monitoring/grafana/smtp/grafana-smtp-values.yaml).
+set -x
 set -euo pipefail
 
 CERT_MANAGER_VERSION="v1.21.2"
