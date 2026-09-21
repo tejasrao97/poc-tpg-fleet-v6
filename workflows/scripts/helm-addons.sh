@@ -51,7 +51,6 @@
 # written to a file. On success the hub run prints REMOTE_WRITE_URL=<url>.
 # KPS_HUB_EXTRA_VALUES: optional comma-separated extra values files for the hub release,
 # relative to --fleet-dir (for example monitoring/grafana/smtp/grafana-smtp-values.yaml).
-set -x
 set -euo pipefail
 
 CERT_MANAGER_VERSION="v1.21.2"
@@ -138,7 +137,7 @@ ver_gt() { ! ver_ge "$2" "$1"; }
 classify() {
   local rel="$1" ns="$2" chart="$3" other
   if h status "$rel" -n "$ns" >/dev/null 2>&1; then echo OURS; return; fi
-  other="$(h list -A -a -o json 2>/dev/null | jq -r --arg c "$chart" --arg r "$rel" --arg n "$ns" '
+  other="$(h list -A -o json 2>/dev/null | jq -r --arg c "$chart" --arg r "$rel" --arg n "$ns" '
     [.[] | select((.chart | test("^" + $c + "-v?[0-9]")) and ((.name != $r) or (.namespace != $n)))
      | .namespace + "/" + .name] | first // empty')"
   if [[ -n "$other" ]]; then echo "OTHER_RELEASE:${other}"; return; fi
@@ -240,8 +239,8 @@ decide() {
       case "$(jq -r '.info.status' <<<"$st")" in
         pending-*) blocked "$rel" "release ${ns}/${rel} has an operation in progress ($(jq -r '.info.status' <<<"$st"))" ;;
       esac
-      cur="$(h list -n "$ns" -a -o json | jq -r --arg r "$rel" '.[] | select(.name == $r) | .chart' | sed -E "s/^${chart}-//")"
-      cur_app="$(h list -n "$ns" -a -o json | jq -r --arg r "$rel" '.[] | select(.name == $r) | .app_version')"
+      cur="$(h list -n "$ns" -o json | jq -r --arg r "$rel" '.[] | select(.name == $r) | .chart' | sed -E "s/^${chart}-//")"
+      cur_app="$(h list -n "$ns" -o json | jq -r --arg r "$rel" '.[] | select(.name == $r) | .app_version')"
       if ver_gt "$cur" "$version"; then
         ACTION=none; result "$rel" SKIPPED_NEWER "installed chart ${cur} is newer than ${version}; no downgrade"; return
       fi
