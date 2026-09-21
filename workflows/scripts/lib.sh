@@ -6,7 +6,7 @@
 # Credentials (Broadcom registry, GitHub read/write PAT, backup storage key) come
 # from Vault: Vault Agent renders them into /vault/secrets/*.json before the step
 # starts (workflows/vault-agent/config-init.hcl); read them with vault_secret.
-
+set -x
 set -euo pipefail
 
 ARGO_NS="argo"
