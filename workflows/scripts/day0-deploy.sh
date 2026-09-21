@@ -17,6 +17,7 @@ fail() { record "result.${C}" FAILED "$1" "${2:-}"; exit 1; }
 use_cluster "$C" || fail NOT_REGISTERED
 INSTANCES="$(inventory_instances "$C")"
 
+set -x
 # ---- Step 2: prepare
 log "preparing namespaces on ${C}"
 for ns in tanzu-postgres-operator $(for i in $INSTANCES; do echo "pg-$i"; done); do
