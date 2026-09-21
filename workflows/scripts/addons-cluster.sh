@@ -9,7 +9,7 @@
 # MONITORING_OPTION in the environment overrides tpg-settings monitoringOption.
 # The result detail lists every release with its pre-check outcome, for example
 #   cert-manager=UP_TO_DATE vault-secrets-operator=INSTALLED kps=SKIPPED_EXISTS
-set -x
+
 WF="$1"; C="$2"; COMPONENTS="$3"; DRY="${4:-false}"; KEY="${5:-result.${C}}"; EXISTING="${6:-skip}"
 # shellcheck source=workflows/scripts/lib.sh
 source /scripts/lib.sh
