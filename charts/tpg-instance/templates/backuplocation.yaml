@@ -1,0 +1,36 @@
+{{- include "tpg.required" . }}
+# Azure Blob backup location (pgBackRest). Field names follow the operator
+# sample manifest; confirm with: kubectl explain postgresbackuplocation.spec.storage.azure
+apiVersion: sql.tanzu.vmware.com/v1
+kind: PostgresBackupLocation
+metadata:
+  name: {{ .Values.instance.name }}-backup-location
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+spec:
+  # pgBackRest expiry: keep the newest fullRetention full backups with every
+  # incremental that depends on them (incrementals have no count of their own)
+  # and the newest diffRetention differentials. WAL older than the oldest kept
+  # backup is removed with it. tpg-backup-retention adds an age limit.
+  retentionPolicy:
+    fullRetention:
+      type: count
+      number: {{ .Values.backup.fullRetention }}
+    diffRetention:
+      number: {{ .Values.backup.diffRetention }}
+  storage:
+    azure:
+      container: {{ .Values.backup.container | quote }}
+      repoPath: {{ printf "/%s" .Release.Namespace | quote }}
+      endpoint: {{ .Values.backup.endpoint | quote }}
+      keyType: "shared"
+      forcePathStyle: false
+      enableSSL: true
+      secret:
+        name: backup-storage
+  additionalParameters: {}
+  backupSync:
+    enabled: true
+  backupIntegrityValidation:
+    enabled: true
