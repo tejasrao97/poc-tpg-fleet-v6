@@ -18,12 +18,6 @@ clusters:
     operator:
       version: v4.5.0
     instances:
-      orders-db:
-        instance:
-          postgresVersion: postgres-16.9
-          highAvailability:
-            enabled: true
-            readReplicas: 1
       billing-db:
         instance:
           postgresVersion: postgres-16.9
